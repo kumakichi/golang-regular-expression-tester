@@ -57,11 +57,6 @@ func regExpProc(conn *websocket.Conn, kv map[string]interface{}) {
 	websocket.Message.Send(conn, b)
 }
 
-func webSocketServer(w http.ResponseWriter, req *http.Request) {
-	s := websocket.Server{Handler: websocket.Handler(webSocketHandler)}
-	s.ServeHTTP(w, req)
-}
-
 func webSocketHandler(conn *websocket.Conn) {
 	var in []byte
 	var kv map[string]interface{}
@@ -86,7 +81,7 @@ func main() {
 	// Static file serving
 	http.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("assets"))))
 	// websocket server
-	http.HandleFunc("/regvalidate", webSocketServer)
+	http.Handle("/regvalidate", websocket.Handler(webSocketHandler))
 
 	// Launch server
 	port := "3000"
